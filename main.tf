@@ -2,7 +2,7 @@ resource "aws_instance" "server1" {
   ami           = var.ami_id
   instance_type = var.instance_type
   key_name      = "keys.pem"
-  user_data     = file("scripts/lamp.sh")
+  user_data     = file("lamp.sh")
 
   tags = {
     Name = "Server1-LAMP"
@@ -13,7 +13,7 @@ resource "aws_instance" "server2" {
   ami           = var.ami_id
   instance_type = var.instance_type
   key_name      = "keys.pem"
-  user_data     = file("scripts/nginx.sh")
+  user_data     = file("nginx.sh")
 
   tags = {
     Name = "Server2-NGINX"
@@ -24,7 +24,7 @@ resource "aws_db_instance" "rds" {
   allocated_storage    = 20
   engine               = "postgres"
   instance_class       = "db.t2.micro"
-  db_name              = "meubanco"   # Substituído "name" por "db_name"
+  db_name              = "dbpostgres"   
   username             = "admin"
   password             = "admin"
   skip_final_snapshot  = true
