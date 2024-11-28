@@ -1,6 +1,7 @@
+
 resource "aws_security_group" "sg_publico" {
   name        = "acesso-publico"
-  description = "Permitir acesso público ao HTTP e SSH"
+  description = "Permitir acesso publico ao HTTP e SSH"
 
   ingress {
     description = "Permitir HTTP"
@@ -27,11 +28,13 @@ resource "aws_security_group" "sg_publico" {
   }
 }
 
-resource "aws_security_group" "sg_rds" {
-  name        = "sg_rds"
+# Security Group para o RDS
+resource "aws_security_group" "sg_rds_new" {
+  name        = "sg_rds_new"
   description = "Acesso privado ao RDS"
 
   ingress {
+    description = "PostgreSQL"
     from_port   = 5432
     to_port     = 5432
     protocol    = "tcp"
@@ -39,6 +42,7 @@ resource "aws_security_group" "sg_rds" {
   }
 
   egress {
+    description = "Trafego de saida"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -46,10 +50,11 @@ resource "aws_security_group" "sg_rds" {
   }
 }
 
+
 resource "aws_instance" "servidor_lamp" {
   ami                   = var.ami_id
   instance_type         = var.instance_type
-  key_name              = "keys.pem"
+  key_name              = "keys" 
   vpc_security_group_ids = [aws_security_group.sg_publico.id]
   user_data             = file("scripts/lamp.sh")
 
@@ -61,7 +66,7 @@ resource "aws_instance" "servidor_lamp" {
 resource "aws_instance" "servidor_nginx" {
   ami                   = var.ami_id
   instance_type         = var.instance_type
-  key_name              = "keys.pem"
+  key_name              = "keys" 
   vpc_security_group_ids = [aws_security_group.sg_publico.id]
   user_data             = file("scripts/nginx.sh")
 
@@ -71,20 +76,21 @@ resource "aws_instance" "servidor_nginx" {
 }
 
 variable "rds_password" {
-  description = "senha do bd"
+  description = "Senha do banco de dados"
   type        = string
 }
 
 resource "aws_db_instance" "rds" {
   allocated_storage     = 20
   engine                = "postgres"
-  instance_class        = "db.t2.micro"
+  engine_version        = "16.3"    
+  instance_class        = "db.t3.micro" 
   db_name               = "dbpostgres"
-  username              = "admin"
+  username              = "superseguro"
   password              = var.rds_password
   skip_final_snapshot   = true
   publicly_accessible   = false
-  vpc_security_group_ids = [aws_security_group.sg_rds.id]
+  vpc_security_group_ids = [aws_security_group.sg_rds_new.id]
 
   tags = {
     Name = "meurds"
@@ -92,14 +98,9 @@ resource "aws_db_instance" "rds" {
 }
 
 resource "aws_s3_bucket" "bucket" {
-  bucket = "meu-bucket-trablhoiac"
+  bucket = "meu-bucket-trabalhoiac"
 
   tags = {
     Name = "trabalhoiac"
   }
-}
-
-resource "aws_s3_bucket_acl" "bucket_acl" {
-  bucket = aws_s3_bucket.bucket.id
-  acl    = "private"
 }
