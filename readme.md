@@ -12,10 +12,11 @@ Detalhes da arquitetura:
 - RDS usando qualquer banco de dados - isolado do restante
 - Criação de bucket - isolado do restante
 
-
 ------------------------------
-As senhas de comunicação com a AWS tem que ser setadas.
-
-Para iniciar tem que na maquina Ec2 Bastian e rodar o comando  `aws configure` E colocar os valores.
-Ou no ~/.aws/credentials
-Colocar o arquivo atual da sessão do Lab da AWS:.
+Configuração das Credenciais AWS :
+1- Via comando aws configure:
+No EC2 Bastion, execute: aws configure
+OU
+2- Insira as credenciais (Access Key, Secret Key, região e formato de saída).
+Ou manualmente no arquivo: ~/.aws/credentials
+*Coloque as credenciais fornecidas no Lab da AWS diretamente neste arquivo.
