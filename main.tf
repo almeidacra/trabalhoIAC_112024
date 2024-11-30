@@ -28,7 +28,6 @@ resource "aws_security_group" "sg_publico" {
   }
 }
 
-# Security Group para o RDS
 resource "aws_security_group" "sg_rds_new" {
   name        = "sg_rds_new"
   description = "Acesso privado ao RDS"
@@ -49,7 +48,6 @@ resource "aws_security_group" "sg_rds_new" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
-
 
 resource "aws_instance" "servidor_lamp" {
   ami                   = var.ami_id
