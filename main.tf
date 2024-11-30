@@ -1,6 +1,6 @@
 
 resource "aws_security_group" "sg_publico" {
-  name        = "acesso-publico"
+  name        = "acesso-publico3"
   description = "Permitir acesso publico ao HTTP e SSH"
 
   ingress {
@@ -54,7 +54,14 @@ resource "aws_instance" "servidor_lamp" {
   instance_type         = var.instance_type
   key_name              = "keys" 
   vpc_security_group_ids = [aws_security_group.sg_publico.id]
-  user_data             = file("scripts/lamp.sh")
+  user_data             =   <<-EOF
+                            #!/bin/bash
+                            yum update -y
+                            yum install -y httpd php php-mysqlnd
+                            systemctl enable httpd
+                            systemctl start httpd
+                            echo "<?php phpinfo(); ?>" > /var/www/html/index.php
+                            EOF
 
   tags = {
     Name = "Servidor1-LAMP"
@@ -66,7 +73,15 @@ resource "aws_instance" "servidor_nginx" {
   instance_type         = var.instance_type
   key_name              = "keys" 
   vpc_security_group_ids = [aws_security_group.sg_publico.id]
-  user_data             = file("scripts/nginx.sh")
+  user_data             =   <<-EOF
+                            #!/bin/bash
+                            yum update -y
+                            amazon-linux-extras enable nginx1
+                            yum install -y nginx
+                            systemctl enable nginx
+                            systemctl start nginx
+                            echo "<h1>Welcome to NGINX Server</h1>" > /usr/share/nginx/html/index.html
+                            EOF
 
   tags = {
     Name = "Servidor2-NGINX"
